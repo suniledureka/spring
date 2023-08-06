@@ -1,0 +1,63 @@
+OAuth2
+
+Google for "Google Cloud"
+
+cloud.google.com > click on "console" > 
+
+Create/ Select a Project
+APIs & Services > OAuth Consent Screen
+
+User Type: External   > Create
+
+Provide App name, User support email, upload logo, Developer contact information > Save and Continue
+
+Add or Remove Scopes > select userinfo.email, userinfo.profile > Update
+> Save and Continue > Save and Continue
+> Back to Dashboard
+
+APIs & Services > Credentials 
+> Create Credentials > Select OAuth Client ID
+
+Application Type : Web application
+
+Authorized redirect URIs: Add URI : http://localhost:8080/login/oauth2/code/google
+
+> Create
+
+copy client id and client secret and provide it in application.properties
+
+spring.security.oauth2.client.registration.google.client-id=<client_id>
+spring.security.oauth2.client.registration.google.client-secret=<client_secret>
+spring.security.oauth2.client.registration.google.scope=email,profile
+
+
+@RestController
+public class WelcomeRestController {
+ @GetMapping("/welcome")
+ public String showWelcomeMessage(Authentication auth) {
+   System.out.println(auth);
+   System.out.println(auth.getPrincipal());
+   return "Welcome to Wipro Technologies";
+ }
+}
+
+
+@Configuration
+public class SecurityConfiguration {
+ @Bean
+ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+   http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+   http.oauth2Login(Customizer.withDefaults()); //http.oauth2Login()
+   return http.build();
+ }
+}
+
+
+
+
+Reference: 
+
+https://www.codejava.net/frameworks/spring-boot/social-login-with-facebook-example
+https://www.codejava.net/frameworks/spring-boot/oauth2-login-with-google-example
+
+
